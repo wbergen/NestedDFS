@@ -14,6 +14,7 @@ import graph.State;
  */
 public class Worker {
 
+
     private final Graph graph;
     private final Colors colors = new Colors();
     private boolean result = false;

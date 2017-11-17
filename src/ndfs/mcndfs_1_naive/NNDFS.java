@@ -10,7 +10,11 @@ import ndfs.NDFS;
  * worker class.
  */
 public class NNDFS implements NDFS {
-
+    /*
+        XXXXXXXXXXXXXXXXXXXXXXXXXX
+        create an array of workers
+        and shared data structures
+    */
     private final Worker worker;
 
     /**
@@ -22,12 +26,19 @@ public class NNDFS implements NDFS {
      *             is thrown in case the file could not be read.
      */
     public NNDFS(File promelaFile, int nrWorkers) throws FileNotFoundException {
-
+        /*
+            XXXXXXXXXXXXXXXXXXXXXXXXXX
+            We need to create locally nrWorkers
+        */
         this.worker = new Worker(promelaFile);
     }
 
     @Override
     public boolean ndfs() {
+        /*  
+            XXXXXXXXXXXXXXXXXXXXXXXXXX
+            We need to run nrWorkers
+        */
         worker.run();
         return worker.getResult();
     }
