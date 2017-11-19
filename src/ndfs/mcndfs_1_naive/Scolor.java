@@ -10,7 +10,7 @@ import graph.State;
  */
 public class Scolor {
 
-    private final Map<State, boolean> map = new HashMap<State, boolean>();
+    private final Map<State, Boolean> map = new HashMap<State, Boolean>();
 
     /**
      * Returns <code>true</code> if the specified state has the specified color,

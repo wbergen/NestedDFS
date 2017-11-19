@@ -10,7 +10,7 @@ import graph.State;
  */
 public class Count {
 
-    private final Map<State, int> map = new HashMap<State, int>();
+    private final Map<State, Integer> map = new HashMap<State, Integer>();
 
     /**
      * Returns <code>true</code> if the specified state has the specified color,
@@ -25,8 +25,8 @@ public class Count {
     public int GetCount(State state) {
 
         // The initial color is white, and is not explicitly represented.
-        int return_value = map.get(state)
-        if ( return_value == null) {
+        int return_value = map.get(state);
+        if ( return_value == 0) {
             return 0;
         } else {
             return return_value;
@@ -43,7 +43,7 @@ public class Count {
      */
 
     public void inc(State state) {
-        if (map.get(state)) {
+        if (map.get(state) != 0) {
             map.put(state, (map.get(state) + 1));
         } else {
             map.put(state, 1);
