@@ -50,6 +50,7 @@ public class Worker extends Thread {
         this.tId = i;
         this.allred = true;
     }
+    // XXX The post need to be modified to partition the successor nodes among the threads 
     /*private List<T> post(graph.State s){
         return graph.post(s);
     }*/
