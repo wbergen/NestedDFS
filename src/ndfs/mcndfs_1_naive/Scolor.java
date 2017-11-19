@@ -8,7 +8,7 @@ import graph.State;
 /**
  * This class provides a color map for graph states.
  */
-public class SColor {
+public class Scolor {
 
     private final Map<State, boolean> map = new HashMap<State, boolean>();
 

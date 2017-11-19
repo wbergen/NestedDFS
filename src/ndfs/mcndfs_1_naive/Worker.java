@@ -45,7 +45,6 @@ public class Worker {
     public Worker(File promelaFile) throws FileNotFoundException {
 
         this.graph = GraphFactory.createGraph(promelaFile);
-
     }
 
     private void dfsRed(State s) throws CycleFoundException {
