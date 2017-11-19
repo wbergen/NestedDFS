@@ -1,4 +1,4 @@
-package ndfs.mcndfs_1_naive;
+package ndfs.mcndfs_2_naive;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,8 +20,8 @@ public class Worker extends Thread {
     */
     private final Graph graph;
     private final Colors colors;
-    private final Scolor pink;
-    private int tId;    
+    private int tId;
+    private boolean allred;
     /*
         Shared non atomic memory
     */
@@ -47,22 +47,22 @@ public class Worker extends Thread {
 
         this.graph = GraphFactory.createGraph(promelaFile);
         this.colors = new Colors();
-        this.pink = new Scolor();
         this.tId = i;
+        this.allred = true;
     }
     /*private List<T> post(graph.State s){
         return graph.post(s);
     }*/
     private void dfsRed(graph.State s, int i) throws CycleFoundException {
 
-        pink.scolor(s,true);
+        colors.color(s, Color.PINK);
     
         for (graph.State t : graph.post(s)) {
             red.lock();
                 if (colors.hasColor(t, Color.CYAN)) {
                     red.unlock();
                     throw new CycleFoundException();
-                } else if (pink.hasColor(t) && !red.hasColor(t)) {
+                } else if (!colors.hasColor(t, Color.PINK) && !red.hasColor(t)) {
                     red.unlock();
                     dfsRed(t, i);
                 }else{
@@ -81,14 +81,17 @@ public class Worker extends Thread {
         red.scolor(s, true);
         red.unlock();
 
-        pink.scolor(s, false);
     }
 
     private void dfsBlue(graph.State s, int i) throws CycleFoundException {
+        allred = true;
 
         colors.color(s, Color.CYAN);
 
         for (graph.State t : graph.post(s)) {
+            if(colors.hasColor(t, Color.CYAN) && (t.isAccepting() || s.isAccepting())){
+                throw new CycleFoundException();
+            }
             red.lock();
             if (colors.hasColor(t, Color.WHITE) && !red.hasColor(t)) {
                 red.unlock();
@@ -96,6 +99,11 @@ public class Worker extends Thread {
             }else{
                 red.unlock();
             }
+            red.lock();
+            if(!red.hasColor(t)){
+                allred = false;
+            }
+            red.unlock();
         }
         if (s.isAccepting()) {
             count.lock();
