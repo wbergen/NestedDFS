@@ -15,7 +15,10 @@ public class NNDFS implements NDFS {
         create an array of workers
         and shared data structures
     */
-    private final Worker worker;
+    // private final Worker worker;
+
+    private int nrWorkers;
+    private final Worker[] workers = new Worker[10];
 
     /**
      * Constructs an NDFS object using the specified Promela file.
@@ -30,7 +33,11 @@ public class NNDFS implements NDFS {
             XXXXXXXXXXXXXXXXXXXXXXXXXX
             We need to create locally nrWorkers
         */
-        this.worker = new Worker(promelaFile);
+        // this.worker = new Worker(promelaFile);
+        this.nrWorkers = nrWorkers;
+        for (int i = 0; i < nrWorkers; i++) {
+            this.workers[i] = new Worker(promelaFile);
+        }
     }
 
     @Override
@@ -39,7 +46,22 @@ public class NNDFS implements NDFS {
             XXXXXXXXXXXXXXXXXXXXXXXXXX
             We need to run nrWorkers
         */
-        worker.run();
-        return worker.getResult();
+        for (int i = 0; i < nrWorkers; i++) {
+            workers[i].run();
+            // return workers[i].getResult();
+        }
+
+        // Need some way to collect the results..
+        boolean res = false;
+        for (int i = 0; i < nrWorkers; i++) {
+            if (workers[i].getResult()) {
+                res = true;
+            }
+        }
+        return res;
+        
+
+        // worker.run();
+        // return worker.getResult();
     }
 }
