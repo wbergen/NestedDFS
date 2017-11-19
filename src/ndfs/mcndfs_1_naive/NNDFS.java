@@ -2,6 +2,8 @@ package ndfs.mcndfs_1_naive;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.Thread;
+import java.lang.InterruptedException;
 
 import ndfs.NDFS;
 
@@ -33,7 +35,7 @@ public class NNDFS implements NDFS {
         this.worker = new Worker[nrWorkers];
         
         for( int i = 0; i < nrWorkers ; i++){
-            this.worker[i] = new Worker(promelaFile);     
+            this.worker[i] = new Worker(promelaFile, i);     
         }
     }
 
@@ -49,12 +51,14 @@ public class NNDFS implements NDFS {
         
         // Sync barrier
         for( int i = 0; i < this.worker.length; i++){
-            this.worker[i].join();
+            try {
+                this.worker[i].join();
+            } catch (InterruptedException e) {
+                ;
+            }
+            
         }
         //return result
         return this.worker[0].getResult();
-
-        // worker.run();
-        // return worker.getResult();
     }
 }

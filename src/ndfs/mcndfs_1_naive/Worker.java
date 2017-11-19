@@ -12,7 +12,7 @@ import graph.State;
  * <a href="http://www.cs.vu.nl/~tcs/cm/ndfs/laarman.pdf"> "the Laarman
  * paper"</a>.
  */
-public class Worker {
+public class Worker extends Thread {
 
 
     /*
@@ -26,7 +26,7 @@ public class Worker {
         Shared non atomic memory
     */
     private static Scolor red = new Scolor();
-    private static int count = new Count();
+    private static Count count = new Count();
     private static boolean result = false;
     private int tId;
 
@@ -47,6 +47,7 @@ public class Worker {
 
         this.graph = GraphFactory.createGraph(promelaFile);
         this.tId = i;
+
     }
 
     /*
@@ -79,12 +80,13 @@ public class Worker {
 
     private void dfsRed(State s, int i) throws CycleFoundException {
 
-        s.pink[i] = true;
+        pink.Scolor(s, true);
 
         for (State t : graph.post(s)) {
-            if (colors.hasColor(t, Color.CYAN)) {
+            // if (colors[i].hash
+            if (colors[i].hasColor(t, Color.CYAN)) {
                 throw new CycleFoundException();
-            } else if (!s.pink[i] && !colors.hasColor(t. Color.RED)) {
+            } else if (pink[i].hasColor(t, false) && !colors.hasColor(t. Color.RED)) {
                 // colors.color(t, Color.RED);
                 dfsRed(t, i);
             }
@@ -97,8 +99,8 @@ public class Worker {
             }
         }
 
-        s.colors = RED;
-        s.pink[i] = false;
+        colors[i].color(s, Color.RED);
+        pink[i].scolor(s, true);
     }
 
     // private void dfsBlue(State s) throws CycleFoundException {
@@ -120,7 +122,7 @@ public class Worker {
     private void dfsBlue(State s, int i) throws CycleFoundException {
 
         // colors.color(s, Color.CYAN);
-        s.color[i] = CYAN;
+        colors[i].color(s, CYAN);
 
         for (State t : graph.post(s)) {
             if (colors.hasColor(t, Color.WHITE) && (!colors.hasColor(t, Color.RED))) {
@@ -130,10 +132,12 @@ public class Worker {
         if (s.isAccepting()) {
             s.count++; 
             dfsRed(s, i);
+        }
             // colors.color(s, Color.RED);
         // } else {
         // colors.color(s, Color.BLUE);
-        s.colors[i] = BLUE;
+        // s.colors[i] = BLUE;
+        colors[i].colors(s, Color.BLUE);
         // }
     }
 
@@ -151,6 +155,12 @@ public class Worker {
         } catch (CycleFoundException e) {
             result = true;
         }
+
+        //     if(e instanceof CycleFoundException){
+        //         result = true;   
+        //     } else if (e instanceof InterruptedException) {
+        //     }
+        // }
     }
 
     public boolean getResult() {
