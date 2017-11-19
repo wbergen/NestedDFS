@@ -49,7 +49,7 @@ public class Count {
     }
 
 
-    /* Lock unlock functions    */
+    /* Lock unlock object functions    */
     public void lock(){
         lock.lock();
     }
