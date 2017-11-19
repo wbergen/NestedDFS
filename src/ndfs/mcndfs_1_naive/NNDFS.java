@@ -18,7 +18,7 @@ public class NNDFS implements NDFS {
     // private final Worker worker;
 
     private int nrWorkers;
-    private final Worker[] workers = new Worker[10];
+    private final Worker[] workers;
 
     /**
      * Constructs an NDFS object using the specified Promela file.
@@ -33,8 +33,10 @@ public class NNDFS implements NDFS {
             XXXXXXXXXXXXXXXXXXXXXXXXXX
             We need to create locally nrWorkers
         */
-        // this.worker = new Worker(promelaFile);
+           
+        this.workers = new Worker[nrWorkers];
         this.nrWorkers = nrWorkers;
+
         for (int i = 0; i < nrWorkers; i++) {
             this.workers[i] = new Worker(promelaFile);
         }
@@ -48,7 +50,6 @@ public class NNDFS implements NDFS {
         */
         for (int i = 0; i < nrWorkers; i++) {
             workers[i].run();
-            // return workers[i].getResult();
         }
 
         // Need some way to collect the results..
