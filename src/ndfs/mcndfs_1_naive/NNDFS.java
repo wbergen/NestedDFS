@@ -33,12 +33,12 @@ public class NNDFS implements NDFS {
             XXXXXXXXXXXXXXXXXXXXXXXXXX
             We need to create locally nrWorkers
         */
-           
+
         this.workers = new Worker[nrWorkers];
         this.nrWorkers = nrWorkers;
 
         for (int i = 0; i < nrWorkers; i++) {
-            this.workers[i] = new Worker(promelaFile);
+            this.workers[i] = new Worker(promelaFile, i);
         }
     }
 

@@ -17,7 +17,9 @@ public class Worker {
 
     private final Graph graph;
     private final Colors colors = new Colors();
+    private final Colors pink[];
     private boolean result = false;
+    private int tId;
 
     // Throwing an exception is a convenient way to cut off the search in case a
     // cycle is found.
@@ -32,46 +34,111 @@ public class Worker {
      * @throws FileNotFoundException
      *             is thrown in case the file could not be read.
      */
-    public Worker(File promelaFile) throws FileNotFoundException {
+    public Worker(File promelaFile, int i) throws FileNotFoundException {
 
         this.graph = GraphFactory.createGraph(promelaFile);
+        this.tId = i;
     }
 
-    private void dfsRed(State s) throws CycleFoundException {
+    /*
+        proc dfs_red ( s , i )
+            s . p i n k [i] := t r u e
+            f o r a l l t i n p o s t ri ( s ) do
+            i f t . c o l o r [i]=c y a n
+            report cycle & exit a l l
+            i f ¬ t . p i n k [i] ∧ ¬ t . r e d
+            dfs_red ( t , i )
+            if s ∈A
+            s . c o u n t := s . c o u n t − 1
+            a w a i t s . c o u n t =0
+            s . r e d := t r u e
+            s . p i n k [i] := f a l s e
+
+    */
+
+    // private void dfsRed(State s) throws CycleFoundException {
+
+    //     for (State t : graph.post(s)) {
+    //         if (colors.hasColor(t, Color.CYAN)) {
+    //             throw new CycleFoundException();
+    //         } else if (colors.hasColor(t, Color.BLUE)) {
+    //             colors.color(t, Color.RED);
+    //             dfsRed(t);
+    //         }
+    //     }
+    // }
+
+    private void dfsRed(State s, int i) throws CycleFoundException {
+
+        s.pink[i] = true;
 
         for (State t : graph.post(s)) {
             if (colors.hasColor(t, Color.CYAN)) {
                 throw new CycleFoundException();
-            } else if (colors.hasColor(t, Color.BLUE)) {
-                colors.color(t, Color.RED);
-                dfsRed(t);
+            } else if (!s.pink[i] && !colors.hasColor(t. Color.RED)) {
+                // colors.color(t, Color.RED);
+                dfsRed(t, i);
             }
         }
+
+        if (s.isAccepting()) {
+            s.count--;
+            while (s.count != 0) {
+                ;
+            }
+        }
+
+        s.colors = RED;
+        s.pink[i] = false;
     }
 
-    private void dfsBlue(State s) throws CycleFoundException {
+    // private void dfsBlue(State s) throws CycleFoundException {
 
-        colors.color(s, Color.CYAN);
+    //     colors.color(s, Color.CYAN);
+    //     for (State t : graph.post(s)) {
+    //         if (colors.hasColor(t, Color.WHITE)) {
+    //             dfsBlue(t);
+    //         }
+    //     }
+    //     if (s.isAccepting()) {
+    //         dfsRed(s);
+    //         colors.color(s, Color.RED);
+    //     } else {
+    //         colors.color(s, Color.BLUE);
+    //     }
+    // }
+
+    private void dfsBlue(State s, int i) throws CycleFoundException {
+
+        // colors.color(s, Color.CYAN);
+        s.color[i] = CYAN;
+
         for (State t : graph.post(s)) {
-            if (colors.hasColor(t, Color.WHITE)) {
-                dfsBlue(t);
+            if (colors.hasColor(t, Color.WHITE) && (!colors.hasColor(t, Color.RED))) {
+                dfsBlue(t, i);
             }
         }
         if (s.isAccepting()) {
-            dfsRed(s);
-            colors.color(s, Color.RED);
-        } else {
-            colors.color(s, Color.BLUE);
-        }
+            s.count++; 
+            dfsRed(s, i);
+            // colors.color(s, Color.RED);
+        // } else {
+        // colors.color(s, Color.BLUE);
+        s.colors[i] = BLUE;
+        // }
     }
 
-    private void nndfs(State s) throws CycleFoundException {
-        dfsBlue(s);
+    // private void nndfs(State s) throws CycleFoundException {
+    //     dfsBlue(s);
+    // }
+
+    private void nndfs(State s, int i) throws CycleFoundException {
+        dfsBlue(s, i);
     }
 
     public void run() {
         try {
-            nndfs(graph.getInitialState());
+            nndfs(graph.getInitialState(), this.tId);
         } catch (CycleFoundException e) {
             result = true;
         }
