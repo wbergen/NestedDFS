@@ -46,7 +46,7 @@ public class NNDFS implements NDFS {
             We need to run nrWorkers
         */
         for( int i = 0; i < this.worker.length; i++){
-            this.worker[i].run();
+            this.worker[i].start();
         }
         
         // Sync barrier

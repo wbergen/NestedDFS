@@ -19,8 +19,8 @@ public class Worker extends Thread {
         private per thread memory
     */
     private final Graph graph;
-    private final Colors colors = new Colors();
-    private final Scolor pink = new Scolor();
+    private final Colors colors;
+    private final Scolor pink;
     
     /*
         Shared non atomic memory
@@ -46,124 +46,79 @@ public class Worker extends Thread {
     public Worker(File promelaFile, int i) throws FileNotFoundException {
 
         this.graph = GraphFactory.createGraph(promelaFile);
-<<<<<<< HEAD
-=======
+        this.colors = new Colors();
+        this.pink = new Scolor();
         this.tId = i;
-
->>>>>>> 7345037f1c949de54d5d74acec8b8ee65b7e6779
     }
+    /*private List<T> post(graph.State s){
+        return graph.post(s);
+    }*/
+    private void dfsRed(graph.State s, int i) throws CycleFoundException {
 
-    /*
-        proc dfs_red ( s , i )
-            s . p i n k [i] := t r u e
-            f o r a l l t i n p o s t ri ( s ) do
-            i f t . c o l o r [i]=c y a n
-            report cycle & exit a l l
-            i f ¬ t . p i n k [i] ∧ ¬ t . r e d
-            dfs_red ( t , i )
-            if s ∈A
-            s . c o u n t := s . c o u n t − 1
-            a w a i t s . c o u n t =0
-            s . r e d := t r u e
-            s . p i n k [i] := f a l s e
-
-    */
-
-    // private void dfsRed(State s) throws CycleFoundException {
-
-    //     for (State t : graph.post(s)) {
-    //         if (colors.hasColor(t, Color.CYAN)) {
-    //             throw new CycleFoundException();
-    //         } else if (colors.hasColor(t, Color.BLUE)) {
-    //             colors.color(t, Color.RED);
-    //             dfsRed(t);
-    //         }
-    //     }
-    // }
-
-    private void dfsRed(State s, int i) throws CycleFoundException {
-
-        pink.Scolor(s, true);
-
-        for (State t : graph.post(s)) {
-            // if (colors[i].hash
-            if (colors[i].hasColor(t, Color.CYAN)) {
-                throw new CycleFoundException();
-            } else if (pink[i].hasColor(t, false) && !colors.hasColor(t. Color.RED)) {
-                // colors.color(t, Color.RED);
-                dfsRed(t, i);
-            }
+        pink.scolor(s,true);
+    
+        for (graph.State t : graph.post(s)) {
+            red.lock();
+                if (colors.hasColor(t, Color.CYAN)) {
+                    red.unlock();
+                    throw new CycleFoundException();
+                } else if (pink.hasColor(t) && !red.hasColor(t)) {
+                    red.unlock();
+                    dfsRed(t, i);
+                }else{
+                    red.unlock();
+                }
         }
 
-        if (s.isAccepting()) {
-            s.count--;
-            while (s.count != 0) {
-                ;
-            }
-        }
+        if(s.isAccepting()) {
+            count.lock();
+            count.dec(s);
+            count.unlock();
 
-        colors[i].color(s, Color.RED);
-        pink[i].scolor(s, true);
+            while(count.GetCount(s) != 0){ ; }
+        }
+        red.lock();
+        red.scolor(s, true);
+        red.unlock();
+
+        pink.scolor(s, false);
     }
 
-    // private void dfsBlue(State s) throws CycleFoundException {
+    private void dfsBlue(graph.State s, int i) throws CycleFoundException {
 
-    //     colors.color(s, Color.CYAN);
-    //     for (State t : graph.post(s)) {
-    //         if (colors.hasColor(t, Color.WHITE)) {
-    //             dfsBlue(t);
-    //         }
-    //     }
-    //     if (s.isAccepting()) {
-    //         dfsRed(s);
-    //         colors.color(s, Color.RED);
-    //     } else {
-    //         colors.color(s, Color.BLUE);
-    //     }
-    // }
+        colors.color(s, Color.CYAN);
 
-    private void dfsBlue(State s, int i) throws CycleFoundException {
-
-        // colors.color(s, Color.CYAN);
-        colors[i].color(s, CYAN);
-
-        for (State t : graph.post(s)) {
-            if (colors.hasColor(t, Color.WHITE) && (!colors.hasColor(t, Color.RED))) {
+        for (graph.State t : graph.post(s)) {
+            red.lock();
+            if (colors.hasColor(t, Color.WHITE) && !red.hasColor(t)) {
+                red.unlock();
                 dfsBlue(t, i);
+            }else{
+                red.unlock();
             }
         }
         if (s.isAccepting()) {
-            s.count++; 
+            count.lock();
+            count.inc(s);
+            count.unlock();
+
             dfsRed(s, i);
-        }
-            // colors.color(s, Color.RED);
-        // } else {
-        // colors.color(s, Color.BLUE);
-        // s.colors[i] = BLUE;
-        colors[i].colors(s, Color.BLUE);
-        // }
+        } 
+        colors.color(s, Color.BLUE);
     }
 
-    // private void nndfs(State s) throws CycleFoundException {
-    //     dfsBlue(s);
-    // }
-
-    private void nndfs(State s, int i) throws CycleFoundException {
+    private void nndfs(graph.State s, int i) throws CycleFoundException {
         dfsBlue(s, i);
     }
 
     public void run() {
+        System.out.println("I'm thread" + this.tId);
         try {
             nndfs(graph.getInitialState(), this.tId);
         } catch (CycleFoundException e) {
+            System.out.println("I'm thread" + this.tId + " I found a cycle");
             result = true;
         }
-
-        //     if(e instanceof CycleFoundException){
-        //         result = true;   
-        //     } else if (e instanceof InterruptedException) {
-        //     }
-        // }
     }
 
     public boolean getResult() {
