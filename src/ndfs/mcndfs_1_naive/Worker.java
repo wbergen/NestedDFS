@@ -15,10 +15,19 @@ import graph.State;
 public class Worker {
 
 
+    /*
+        private per thread memory
+    */
     private final Graph graph;
     private final Colors colors = new Colors();
-    private final Colors pink[];
-    private boolean result = false;
+    private final Scolor pink = new Scolor();
+    
+    /*
+        Shared non atomic memory
+    */
+    private static Scolor red = new Scolor();
+    private static int count = new Count();
+    private static boolean result = false;
     private int tId;
 
     // Throwing an exception is a convenient way to cut off the search in case a
