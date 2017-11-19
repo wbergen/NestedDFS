@@ -15,9 +15,19 @@ import graph.State;
 public class Worker {
 
 
+    /*
+        private per thread memory
+    */
     private final Graph graph;
     private final Colors colors = new Colors();
-    private boolean result = false;
+    private final Scolor pink = new Scolor();
+    
+    /*
+        Shared non atomic memory
+    */
+    private static Scolor red = new Scolor();
+    private static int count = new Count();
+    private static boolean result = false;
 
     // Throwing an exception is a convenient way to cut off the search in case a
     // cycle is found.
@@ -35,6 +45,7 @@ public class Worker {
     public Worker(File promelaFile) throws FileNotFoundException {
 
         this.graph = GraphFactory.createGraph(promelaFile);
+
     }
 
     private void dfsRed(State s) throws CycleFoundException {
