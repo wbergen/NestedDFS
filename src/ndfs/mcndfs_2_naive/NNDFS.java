@@ -35,7 +35,7 @@ public class NNDFS implements NDFS {
         this.worker = new Worker[nrWorkers];
         
         for( int i = 0; i < nrWorkers ; i++){
-            this.worker[i] = new Worker(promelaFile, i);     
+            this.worker[i] = new Worker(promelaFile, i, nrWorkers);     
         }
     }
 

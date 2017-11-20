@@ -7,6 +7,7 @@ import graph.Graph;
 import graph.GraphFactory;
 import graph.State;
 
+import java.util.ArrayList;
 /**
  * This is a straightforward implementation of Figure 1 of
  * <a href="http://www.cs.vu.nl/~tcs/cm/ndfs/laarman.pdf"> "the Laarman
@@ -22,6 +23,7 @@ public class Worker extends Thread {
     private final Colors colors;
     private int tId;
     private boolean allred;
+    private int nW;
     /*
         Shared non atomic memory
     */
@@ -43,22 +45,52 @@ public class Worker extends Thread {
      * @throws FileNotFoundException
      *             is thrown in case the file could not be read.
      */
-    public Worker(File promelaFile, int i) throws FileNotFoundException {
+    public Worker(File promelaFile, int i, int nW) throws FileNotFoundException {
 
         this.graph = GraphFactory.createGraph(promelaFile);
         this.colors = new Colors();
         this.tId = i;
         this.allred = true;
+        this.nW = nW;
     }
-    // XXX The post need to be modified to partition the successor nodes among the threads 
-    /*private List<T> post(graph.State s){
-        return graph.post(s);
-    }*/
+
+    // partition the successor nodes among the threads 
+    private ArrayList<graph.State> post(graph.State s){
+        
+        ArrayList<graph.State>  list = new ArrayList<graph.State>(graph.post(s));
+        int size = list.size();
+
+        if (size == 1 || size == 0){
+            return list;
+        }
+
+        float ratio = list.size()/(this.nW);
+        int dratio;
+        int uratio;
+        int startIdx;
+        int endIdx;
+
+        if(ratio <= 1){
+            ratio = 1;
+        }
+
+        dratio = (int)Math.floor(ratio);
+        uratio = (int)Math.ceil(ratio);
+
+        //System.out.println("ratio: " + ratio + " dratio: " + dratio + " uratio: " + uratio + " id: " + this.tId);
+
+        startIdx = dratio * this.tId;
+        endIdx = startIdx + uratio;
+
+        //System.out.println("start: " + startIdx + " end: " + endIdx + " size: " + size);
+        return list = new ArrayList<graph.State>(list.subList(startIdx, endIdx));
+    }
+
     private void dfsRed(graph.State s, int i) throws CycleFoundException {
 
         colors.color(s, Color.PINK);
-    
-        for (graph.State t : graph.post(s)) {
+
+        for (graph.State t : post(s)) {
             red.lock();
                 if (colors.hasColor(t, Color.CYAN)) {
                     red.unlock();
@@ -88,8 +120,9 @@ public class Worker extends Thread {
         allred = true;
 
         colors.color(s, Color.CYAN);
+        //System.out.println(graph.post(s).getClass().getName());
 
-        for (graph.State t : graph.post(s)) {
+        for (graph.State t : post(s)) {
             if(colors.hasColor(t, Color.CYAN) && (t.isAccepting() || s.isAccepting())){
                 throw new CycleFoundException();
             }
