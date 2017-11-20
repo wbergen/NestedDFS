@@ -64,25 +64,19 @@ public class Worker extends Thread {
             return list;
         }
 
-        float ratio = list.size()/(this.nW);
-        int dratio;
+        float ratio = (float)list.size()/(float)(this.nW);
         int uratio;
         int startIdx;
         int endIdx;
 
-        if(ratio <= 1){
-            ratio = 1;
-        }
-
-        dratio = (int)Math.floor(ratio);
         uratio = (int)Math.ceil(ratio);
 
         //System.out.println("ratio: " + ratio + " dratio: " + dratio + " uratio: " + uratio + " id: " + this.tId);
 
-        startIdx = dratio * this.tId;
+        startIdx = (int)Math.floor(ratio * this.tId);
         endIdx = startIdx + uratio;
 
-        //System.out.println("start: " + startIdx + " end: " + endIdx + " size: " + size);
+        //System.out.println("start: " + startIdx + " end: " + endIdx + " size: " + size + " id: " + this.tId);
         return list = new ArrayList<graph.State>(list.subList(startIdx, endIdx));
     }
 
